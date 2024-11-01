@@ -14,16 +14,6 @@ import java.sql.SQLException;
 
 
 public class Parser {
-    public static boolean Validate(File db_file) {
-        String prefix = "jdbc:sqlite:";
-        try {
-            Connection connection = DriverManager.getConnection(prefix + db_file.getAbsolutePath());
-        } catch (SQLException e) {
-            return false;
-        }
-        return true;
-    }
-
     public static void Clone(File source, File target) {
         Path source_path = Paths.get(source.getAbsolutePath());
         Path target_path = Paths.get(target.getAbsolutePath());
