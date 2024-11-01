@@ -12,10 +12,8 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
-import by.ww.cleaner.exceptions.*;
 
-
-public class SQLiteParser {
+public class Parser {
     public static boolean Validate(File db_file) {
         String prefix = "jdbc:sqlite:";
         try {
