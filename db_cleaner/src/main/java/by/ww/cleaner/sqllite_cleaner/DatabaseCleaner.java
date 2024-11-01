@@ -1,6 +1,6 @@
 package by.ww.cleaner.sqllite_cleaner;
 
-import by.ww.cleaner.detect.Checker;
+import by.ww.cleaner.detector.Checker;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -8,9 +8,11 @@ import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import by.ww.cleaner.Config;
+
 public class DatabaseCleaner {
-    public static void cleanDatabase(String dbFilePath) {
-        String dbUrl = "jdbc:sqlite:" + dbFilePath;
+    public static void cleanDatabase(String dbfilePath) {
+        String dbUrl = "jdbc:sqlite:" + dbfilePath;
 
         try (Connection conn = DriverManager.getConnection(dbUrl);
              Statement stmt = conn.createStatement()) {
@@ -20,32 +22,27 @@ public class DatabaseCleaner {
 
             while (rsTables.next()) {
                 String tableName = rsTables.getString("name");
-                executor.submit(() -> cleanTableColumns(tableName));
+                executor.submit(() -> cleanTableColumns(conn, tableName));
             }
 
             executor.shutdown();
             while (!executor.isTerminated()) {}
         } catch (SQLException e) {
-            throw new RuntimeException("Invalid file type, expected .db", e);
+            throw new RuntimeException("Invalid file type", e);
         }
     }
 
 
-    private static void cleanTableColumns(String tableName) {
-        try (Connection conn = DriverManager.getConnection("jdbc:sqlite:mydatabase.db");
-             Statement stmt = conn.createStatement()) {
-
+    private static void cleanTableColumns(Connection conn, String tableName) {
+        try (Statement stmt = conn.createStatement()) {
             ResultSet rs = stmt.executeQuery("PRAGMA table_info(" + tableName + ");");
             ArrayList<String> columnsToDrop = new ArrayList<>();
-            Checker checker = new Checker("/main/resources/credential_names.json");
+            Checker checker = new Checker(Config.credNamesJsonPath);
             while (rs.next()) {
                 String columnName = rs.getString("name");
 
                 if (checker.isConfidential(columnName)) {
-                    System.out.println("Deleting column: " + columnName);
                     columnsToDrop.add(columnName);
-                } else {
-                    System.out.println("Skipping column: " + columnName);
                 }
             }
 

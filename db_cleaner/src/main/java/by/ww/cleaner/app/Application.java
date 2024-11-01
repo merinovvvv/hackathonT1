@@ -5,6 +5,9 @@ import javax.swing.plaf.ColorUIResource;
 import java.awt.*;
 import java.io.File;
 
+import by.ww.cleaner.Config;
+import by.ww.cleaner.sqllite_cleaner.DatabaseCleaner;
+
 public class Application extends JFrame {
 
     private static final Color BACKGROUND_COLOR = new Color(240, 240, 240);
@@ -24,6 +27,7 @@ public class Application extends JFrame {
         initComponents();
         layoutComponents();
         applyModernStyling();
+        addActionListeners();
     }
 
     private void setupLookAndFeel() {
@@ -69,22 +73,6 @@ public class Application extends JFrame {
         execute.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
     }
 
-    private void showDatabaseStatus(String databaseName) {
-        boolean isDatabaseSelected = true; // Simulating selection status
-
-        if (isDatabaseSelected) {
-            JOptionPane.showMessageDialog(Application.this,
-                    "The database " + databaseName + " is hidden",
-                    "Confirmation",
-                    JOptionPane.INFORMATION_MESSAGE);
-        } else {
-            JOptionPane.showMessageDialog(Application.this,
-                    "The database " + databaseName + " is not hidden",
-                    "Error",
-                    JOptionPane.ERROR_MESSAGE);
-        }
-    }
-
     private static void fillComboBoxWithDatabaseNames(JComboBox<String> bases) {
         File folder = new File("../examples");
 
@@ -101,7 +89,6 @@ public class Application extends JFrame {
         }
     }
 
-    // Custom rounded button class
     static class RoundedButton extends JButton {
 
         public RoundedButton(String label) {
@@ -109,13 +96,12 @@ public class Application extends JFrame {
             setContentAreaFilled(false);
             setFocusPainted(false);
             setBorderPainted(false);
-            setOpaque(false); // Make the button transparent
+            setOpaque(false);
             setBackground(BUTTON_COLOR);
         }
 
         @Override
         protected void paintComponent(Graphics g) {
-            // Set the background color
             g.setColor(getBackground());
             g.fillRoundRect(0, 0, getWidth(), getHeight(), getHeight(), getHeight());
             super.paintComponent(g);
@@ -124,7 +110,40 @@ public class Application extends JFrame {
         @Override
         public void setBackground(Color bg) {
             super.setBackground(bg);
-            repaint(); // Ensure the button is repainted
+            repaint();
         }
+    }
+
+    private void addActionListeners() {
+        execute.addActionListener(e -> {
+            String selectedDatabase = (String) bases.getSelectedItem();
+            if (selectedDatabase != null) {
+                File databaseFile = new File(Config.workingDirectory + selectedDatabase);
+                if (databaseFile.exists()) {
+                    try {
+                        DatabaseCleaner.cleanDatabase(databaseFile.getAbsolutePath());
+                        JOptionPane.showMessageDialog(this,
+                                "Cleaning completed for database: " + selectedDatabase,
+                                "Success",
+                                JOptionPane.INFORMATION_MESSAGE);
+                    } catch (Exception ex) {
+                        JOptionPane.showMessageDialog(this,
+                                "Error cleaning database: " + ex.getMessage(),
+                                "Error",
+                                JOptionPane.ERROR_MESSAGE);
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(this,
+                            "Selected database file does not exist.",
+                            "Error",
+                            JOptionPane.ERROR_MESSAGE);
+                }
+            } else {
+                JOptionPane.showMessageDialog(this,
+                        "No database selected!",
+                        "Error",
+                        JOptionPane.WARNING_MESSAGE);
+            }
+        });
     }
 }

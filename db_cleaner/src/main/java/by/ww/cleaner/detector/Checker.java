@@ -1,4 +1,4 @@
-package by.ww.cleaner.detect;
+package by.ww.cleaner.detector;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
