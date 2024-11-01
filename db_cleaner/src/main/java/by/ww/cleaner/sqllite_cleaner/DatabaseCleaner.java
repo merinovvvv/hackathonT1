@@ -32,7 +32,7 @@ public class DatabaseCleaner {
 
             ResultSet rs = stmt.executeQuery("PRAGMA table_info(" + tableName + ");");
             ArrayList<String> columnsToDrop = new ArrayList<>();
-            Checker checker = new Checker("/main/by/ww/cleaner/detect/data.json");
+            Checker checker = new Checker("/main/resources/credential_names.json");
             while (rs.next()) {
                 String columnName = rs.getString("name");
 

@@ -3,8 +3,6 @@ package by.ww.cleaner.app;
 import javax.swing.*;
 import javax.swing.plaf.ColorUIResource;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.File;
 
 public class Application extends JFrame {
@@ -88,7 +86,7 @@ public class Application extends JFrame {
     }
 
     private static void fillComboBoxWithDatabaseNames(JComboBox<String> bases) {
-        File folder = new File("/");
+        File folder = new File("../examples");
 
         File[] files = folder.listFiles();
 
