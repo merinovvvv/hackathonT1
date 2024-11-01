@@ -61,9 +61,6 @@ public class DatabaseCleaner {
             boolean isColumnToAdd = true;
             for(String columnName : columnNames) {
                 if (currentColumn.equals(columnName)) {
-                    if (!columns.isEmpty()) {
-                        columns.append(", ");
-                    }
                     isColumnToAdd = false;
                     break;
                 }
