@@ -16,7 +16,7 @@ import by.ww.cleaner.exceptions.*;
 
 
 public class SQLiteParser {
-    static private boolean Validate(File db_file) {
+    public static boolean Validate(File db_file) {
         String prefix = "jdbc:sqlite:";
         try {
             Connection connection = DriverManager.getConnection(prefix + db_file.getAbsolutePath());
@@ -26,10 +26,7 @@ public class SQLiteParser {
         return true;
     }
 
-    public static void Clone(File source, File target) throws InvalidFileTypeException {
-        if (!Validate(source)) {
-            throw new InvalidFileTypeException("Invalid file.");
-        }
+    public static void Clone(File source, File target) {
         Path source_path = Paths.get(source.getAbsolutePath());
         Path target_path = Paths.get(target.getAbsolutePath());
         try {
