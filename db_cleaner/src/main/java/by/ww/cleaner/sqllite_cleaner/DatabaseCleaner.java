@@ -1,5 +1,7 @@
 package by.ww.cleaner.sqllite_cleaner;
 
+import by.ww.cleaner.detect.Checker;
+
 import java.sql.*;
 import java.util.ArrayList;
 
@@ -30,11 +32,11 @@ public class DatabaseCleaner {
 
             ResultSet rs = stmt.executeQuery("PRAGMA table_info(" + tableName + ");");
             ArrayList<String> columnsToDrop = new ArrayList<>();
-
+            Checker checker = new Checker("/main/by/ww/cleaner/detect/data.json");
             while (rs.next()) {
                 String columnName = rs.getString("name");
 
-                if (isConfident(columnName)) {
+                if (checker.isConfidential(columnName)) {
                     System.out.println("Deleting column: " + columnName);
                     columnsToDrop.add(columnName);
                 } else {
@@ -89,11 +91,6 @@ public class DatabaseCleaner {
         } finally {
             conn.setAutoCommit(true);
         }
-    }
-
-
-    private static boolean isConfident(String columnName) {
-        return columnName.startsWith("conf_");
     }
 }
 
