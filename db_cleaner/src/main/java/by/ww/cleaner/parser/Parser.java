@@ -14,7 +14,7 @@ public class Parser {
         String prefix = "jdbc:sqlite:";
         try {
             connection = DriverManager.getConnection(prefix + db_file.getAbsolutePath());
-        } catch (SQLException _) {
+        } catch (SQLException e) {
             return false;
         }
         return true;
