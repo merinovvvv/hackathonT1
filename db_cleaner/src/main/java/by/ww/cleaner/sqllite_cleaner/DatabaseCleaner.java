@@ -5,26 +5,42 @@ import by.ww.cleaner.detect.Checker;
 import java.sql.*;
 import java.util.ArrayList;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 public class DatabaseCleaner {
-    public static void cleanDatabase(String dbFilePath) {
-        String dbUrl = "jdbc:sqlite:" + dbFilePath;
+        public static void cleanDatabase(String dbFilePath) {
+            String dbUrl = "jdbc:sqlite:" + dbFilePath;
 
-        try (Connection conn = DriverManager.getConnection(dbUrl);
-             Statement stmt = conn.createStatement()) {
+            try (Connection conn = DriverManager.getConnection(dbUrl);
+                 Statement stmt = conn.createStatement()) {
 
-            ResultSet rsTables = stmt.executeQuery(
-                    "SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%';"
-            );
+                // Create a thread pool with a fixed number of threads
+                ExecutorService executor = Executors.newFixedThreadPool(5); // Adjust the number based on your requirements
 
-            while (rsTables.next()) {
-                String tableName = rsTables.getString("name");
-                System.out.println("Cleaning columns for table: " + tableName);
-                cleanTableColumns(tableName);
+                ResultSet rsTables = stmt.executeQuery(
+                        "SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%';"
+                );
+
+                while (rsTables.next()) {
+                    String tableName = rsTables.getString("name");
+                    System.out.println("Cleaning columns for table: " + tableName);
+
+                    // Submit a task for cleaning each table column
+                    executor.submit(() -> cleanTableColumns(tableName));
+                }
+
+                // Shutdown executor service gracefully
+                executor.shutdown();
+                // Wait for all tasks to finish
+                while (!executor.isTerminated()) {}
+
+                System.out.println("All tables cleaned.");
+
+            } catch (SQLException e) {
+                throw new RuntimeException("Invalid file type, expected .db", e);
             }
-        } catch (SQLException e){
-            throw new RuntimeException("Invalid file type, expected .db", e);
         }
-    }
 
     private static void cleanTableColumns(String tableName) {
         try (Connection conn = DriverManager.getConnection("jdbc:sqlite:mydatabase.db");
