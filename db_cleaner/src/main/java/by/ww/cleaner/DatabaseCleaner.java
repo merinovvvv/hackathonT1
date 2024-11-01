@@ -26,7 +26,7 @@ public class DatabaseCleaner {
                 ColumnCleaner.cleanTableColumns(tableName);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            System.out.println(e.getMessage());
         }
     }
 }
