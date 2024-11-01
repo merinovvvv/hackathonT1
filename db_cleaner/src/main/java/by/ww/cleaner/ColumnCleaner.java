@@ -1,11 +1,12 @@
-package by.ww.cleaner.parser;
+package by.ww.cleaner;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Statement;
 
-public class SQLiteCleaner {
+public class ColumnCleaner {
+
 
     public static void cleanTableColumns(String tableName) {
         try (Connection conn = DriverManager.getConnection("jdbc:sqlite:mydatabase.db");
